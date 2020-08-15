@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import { w3cwebsocket as W3CWebsocket } from "websocket";
 import { Card, Avatar, Input, Typography } from "antd";
 import "antd/dist/antd.css";
 
+import userReducer, { initialState, setIsLoggedIn, setUser } from "./reducer/userReducer";
 const client = new W3CWebsocket("ws://127.0.0.1:8000");
 
 const { Search } = Input;
@@ -10,8 +11,9 @@ const { Text } = Typography;
 const { Meta } = Card;
 
 function App() {
-  const [userName, setUserName] = useState("");
-  const [isLoggedIn, setIslogedIn] = useState(false);
+  const [store, dispatch] = useReducer(userReducer, initialState);
+  const { userName, isLoggedIn } = store;
+
   const [messages, setMessage] = useState([]);
   const [searchVal, setSearchVal] = useState("");
 
@@ -37,8 +39,8 @@ function App() {
   }
 
   function onLogin(value) {
-    setUserName(value);
-    setIslogedIn(true);
+    dispatch(setUser(value));
+    dispatch(setIsLoggedIn(true));
   }
 
   return (
