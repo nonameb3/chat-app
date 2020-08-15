@@ -14,7 +14,7 @@ const wsServer = new webSocketServer({
 const clients = {};
 
 wsServer.on('request', function (request) {
-  var userID = uuid.v5();
+  var userID = uuid.v1();
   console.log(new Date() + ' Recieved a new connection from origin ' + request.origin + '.');
 
   // You can rewrite this part of the code to accept only the requests from allowed origin
