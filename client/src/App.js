@@ -23,9 +23,22 @@ function App() {
       const data = JSON.parse(message?.data);
       if (data.type === "message") {
         setMessage((msg) => [...msg, { msg: data.msg, user: data.user }]);
+      } else {
+        setMessage((msg) => [...msg, { msg: `${data.user} is connected.`, user: data.user, system: true }]);
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (userName) {
+      client.send(
+        JSON.stringify({
+          type: "userLogin",
+          user: userName,
+        })
+      );
+    }
+  }, [userName]);
 
   function onClick(value) {
     client.send(
@@ -47,28 +60,34 @@ function App() {
     <div className='App'>
       {isLoggedIn ? (
         <div>
-          <div className='title'>
+          <div className='title' style={{ textAlign: "center" }}>
             <Text type='secondary' style={{ fontSize: "36px" }}>
               Websocket Chat
             </Text>
           </div>
           <div style={{ display: "flex", flexDirection: "column", paddingBottom: 50 }}>
-            {messages.map((message) => (
-              <Card
-                key={message.msg}
-                style={{
-                  width: 300,
-                  margin: "16px 4px 0 4px",
-                  alignSelf: userName === message.user ? "flex-end" : "flex-start",
-                }}
-                loading={false}>
-                <Meta
-                  avatar={<Avatar style={{ color: "#f56a00", backgroundColor: "#fde3cf" }}>{message.user[0].toUpperCase()}</Avatar>}
-                  title={message.user}
-                  description={message.msg}
-                />
-              </Card>
-            ))}
+            {messages.map((message) =>
+              !message.system ? (
+                <Card
+                  key={message.msg}
+                  style={{
+                    width: 300,
+                    margin: "16px 4px 0 4px",
+                    alignSelf: userName === message.user ? "flex-end" : "flex-start",
+                  }}
+                  loading={false}>
+                  <Meta
+                    avatar={<Avatar style={{ color: "#f56a00", backgroundColor: "#fde3cf" }}>{message.user[0].toUpperCase()}</Avatar>}
+                    title={message.user}
+                    description={message.msg}
+                  />
+                </Card>
+              ) : (
+                <p key={message.msg} style={{ padding: 0, margin: "16px 4px 0 4px", paddingLeft: "5%" }}>
+                  {userName !== message.user && message.msg}
+                </p>
+              )
+            )}
           </div>
           <div className='bottom'>
             <Search
