@@ -19,6 +19,7 @@ function App() {
 
   useEffect(() => {
     client.onopen = () => console.log("Websocket Client is Connected!");
+    client.onclose = () => console.log("Websocket Client is Closed");
     client.onmessage = (message) => {
       const data = JSON.parse(message?.data);
       if (data.type === "message") {
@@ -56,6 +57,12 @@ function App() {
     dispatch(setIsLoggedIn(true));
   }
 
+  function onLogout(e) {
+    e.preventDefault();
+    dispatch(setUser(null));
+    dispatch(setIsLoggedIn(false));
+  }
+
   return (
     <div className='App'>
       {isLoggedIn ? (
@@ -64,6 +71,9 @@ function App() {
             <Text type='secondary' style={{ fontSize: "36px" }}>
               Websocket Chat
             </Text>
+            <a href='#' onClick={onLogout}>
+              logout
+            </a>
           </div>
           <div style={{ display: "flex", flexDirection: "column", paddingBottom: 50 }}>
             {messages.map((message) =>
